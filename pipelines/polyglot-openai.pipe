@@ -177,7 +177,7 @@
   "name": "Polyglot Cup (OpenAI)",
   "description": "dropper -> parse -> audio_transcribe -> question -> prompt -> llm_openai -> response_answers. OpenAI variant of Polyglot Cup: parallel-transcribe short World Cup fan clips in their native language, then translate + tag the moment to English. Swap target for the live llm_anthropic -> llm_openai closer.",
   "source": "dropper_1",
-  "project_id": "064a9a63-22cd-4890-bc07-dd24e4dfd3e9",
+  "project_id": "a15c8fea-0928-4471-a370-19e6df279b8d",
   "version": 1,
   "isLocked": false,
   "snapToGrid": true,
