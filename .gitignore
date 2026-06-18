@@ -2,3 +2,4 @@
 clips/
 .rocketride/
 .venv/
+.DS_Store

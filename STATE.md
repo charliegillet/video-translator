@@ -37,6 +37,26 @@ Now targeting the **IDE-managed local engine**, not cloud.
 - **OpenAI key:** `llm_openai` uses `${ROCKETRIDE_OPENAI_KEY}` (set in gitignored `.env`). In IDE/local mode, make sure the engine actually receives it (extension env sync / project `.env`). NEVER paste the literal key into the canvas: it gets written into the `.pipe` and committed (happened once, see git `5b8c1fc`; reverted in `1efb7b5`).
 - **Known SDK skew:** SDK 1.2.0 vs engine 3.2.2 — the SDK's `validate()` / `get_services()` response shapes don't fully line up (engine `validate()` returns a spurious `ccode 40`). Treat the static validators (`tools/validate_pipes.py`, skill `--static`) plus the live IDE run as authoritative; pin the SDK to the engine version if you need SDK `validate()` or scripted `send_files()` runs.
 
+### Clips: DONE (2026-06-18) — CURRENT
+All booth clips are downloaded, curated (every clip human listen-checked), and grouped by spoken language in `clips/<lang>/` (gitignored, not in the repo). **37 clips across 8 languages:**
+
+| lang | clips |
+|---|---|
+| en | 9 |
+| es | 8 |
+| pt | 6 |
+| de | 4 |
+| ar | 3 |
+| fr | 3 |
+| ko | 3 |
+| ja | 1 |
+
+- Every clip is ≤60s with verified audio (no silent clips); grouped by language so Whisper `language` is set per folder.
+- Changes from the original 6-language plan: **Norwegian (`no`) dropped** — no clean Norwegian-speech UGC exists in-window (the viral escalator clip is English news coverage). **English (`en`), Arabic (`ar`), Korean (`ko`) added** as bonuses. **Japanese (`ja`) is thin at 1** — on-site JP content is overwhelmingly stadium roar, not single-speaker speech.
+- **English clips are NOT translated** (English in → English out); they round out the grid. 4 of the 9 are short FIFA goal Shorts (little speech, FIFA Content-ID); 5 are English-creator commentary with real talking.
+- Sourcing method: per-language agent passes with YouTube auto-caption + volume verification, then human ear-check. **Sourcing is COMPLETE.**
+- Possible follow-up: some clips are exactly 60s; may shorten to strictly `<1 min` if needed.
+
 ### Pending to go LIVE — CLOUD path (SUPERSEDED by LOCAL mode above; kept for reference)
 1. Generate a cloud API key: cloud.rocketride.ai → API Keys → Create.
 2. Fill `.env` (already exists, copied from `.env.example`):
@@ -48,7 +68,7 @@ Now targeting the **IDE-managed local engine**, not cloud.
 4. Then: live connection check + push ONE test clip end-to-end to confirm transcription + translation behave before committing to all 30.
 
 ### Build steps not yet done (no creds needed for most)
-- Download ~30 fan clips via `yt-dlp` into `clips/<lang>/` (search queries below).
+- ~~Download ~30 fan clips via `yt-dlp` into `clips/<lang>/`.~~ **DONE** — 37 clips / 8 languages; see "Clips: DONE" above.
 - `driver.py`: `client.use(..., ttl=0, use_existing=True)` once + the dropper flow (or `send_files` for the scripted/grid variant).
 - Patch the stale `.pipe` skeleton in `PLAN-polyglot-cup.md`.
 - (Optional, later) custom SSE grid UI for the cascade visual (variant B).
@@ -97,14 +117,14 @@ Prioritize **one clear speaker** over stadium roar (crowd noise transcribes to g
 - `pipelines/polyglot.pipe` — the validated dropper pipeline (source of truth).
 - `tools/validate_pipes.py` — offline structural validator.
 - `.rocketride/` — services-catalog.json + schema (the live cloud node catalog).
-- `clips/{es,de,no,pt,ja,fr}/` — download targets.
+- `clips/{en,es,pt,de,ar,fr,ko,ja}/` — the 37 downloaded booth clips (gitignored), grouped by spoken language. See "Clips: DONE".
 - `.env` / `.env.example` — credentials (`.env` is gitignored).
 
 ---
 
 ## Suggested next action for a fresh session
 1. Confirm the pipe still validates (command above).
-2. If Charlie has filled `.env` + `pip3 install rocketride`: run a live connection check, then push one test clip.
-3. Otherwise: write the `yt-dlp` download/sort script and/or patch the PLAN skeleton, which need no creds.
+2. Clips are DONE (see "Clips: DONE") — run the pipe in the RocketRide IDE (local engine) on the `clips/<lang>/` folders, or use `tools/connection_check.py` to verify the local engine, then push a test clip.
+3. Remaining open items: patch the stale `.pipe` skeleton in `PLAN-polyglot-cup.md`; optionally shorten clips to strictly `<1 min`; optional Japanese depth (ja=1).
 
 > Note on resuming: this folder is its OWN Claude Code project. The original brainstorm session lives under the `rocketride-server` project and will NOT appear in `/resume` here. That's expected; this STATE.md + the two docs above carry the full context.

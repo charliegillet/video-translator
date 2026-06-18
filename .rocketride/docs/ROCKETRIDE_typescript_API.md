@@ -370,14 +370,14 @@ new RocketRideClient(config?: RocketRideClientConfig)
 - `onDisconnected?: (reason?: string, hasError?: boolean) => Promise<void>` - Connection lost callback
 - `persist?: boolean` - Enable automatic reconnection with exponential backoff (default: false)
 - `maxRetryTime?: number` - Maximum total time in milliseconds to keep retrying connections (default: undefined, retry indefinitely)
-- `onConnectError?: (error: ConnectionException) => void | Promise<void>` - Called on each failed connection attempt in persist mode (the argument is a `ConnectionException`)
+- `onConnectError?: (error?: string) => Promise<void>` - Called on each failed connection attempt in persist mode
 - `module?: string` - Module name for client identification
 
 #### Connection Methods
 
-##### `connect(credential?: string | { code: string; verifier: string; redirectUri: string }, options?: { uri?: string; timeout?: number }): Promise<ConnectResult>`
+##### `connect(): Promise<void>`
 
-Establish a connection to the RocketRide server. The optional `credential` may be either an API-key/token string or an OAuth PKCE object (`{ code, verifier, redirectUri }`); `options` (`uri`, `timeout`) override config per call. Returns a `ConnectResult` carrying the resolved auth/identity info (most callers can ignore the return value).
+Establish connection to the RocketRide server.
 
 ##### `disconnect(): Promise<void>`
 
@@ -386,38 +386,6 @@ Close connection to the RocketRide server and stop automatic reconnection.
 ##### `isConnected(): boolean`
 
 Check if the client is currently connected to the server.
-
-#### Auth & Connection Lifecycle
-
-Lower-level lifecycle primitives that `connect()`/`disconnect()` build on: open a transport, authenticate, and tear down independently. `connect()` itself is the high-level convenience: it attaches and logs in for you, and its `credential` may be either an API key/token string or an OAuth PKCE object `{ code, verifier, redirectUri }`.
-
-##### `attach(uri?: string, options?: { timeout?: number }): Promise<void>`
-
-Open the WebSocket transport without authenticating. If `uri` differs from the current one, the client detaches first. After attach, public (`rrext_public_*`) APIs are available. No-op if already attached to the same URI.
-
-##### `login(credential?: string | { code: string; verifier: string; redirectUri: string }, options?: { uri?: string; timeout?: number }): Promise<ConnectResult>`
-
-Authenticate over an already-attached transport. Accepts an API key, an `rr_` token, or a PKCE code object. If `options.uri` differs, it detaches and re-attaches first. Returns a `ConnectResult` with user identity. Throws `AuthenticationException` on failure (the transport stays attached).
-
-##### `logout(): Promise<void>`
-
-Deauthenticate (sends `deauth`) and clear client auth state. The transport stays attached, so public APIs keep working.
-
-##### `detach(): Promise<void>`
-
-Close the WebSocket transport entirely.
-
-**Example: manual attach/login/logout/detach:**
-
-```typescript
-const client = new RocketRideClient({ uri: 'https://api.rocketride.ai' });
-
-await client.attach(); // transport only — public APIs now available
-await client.login('your-api-key'); // authenticate
-// ... do authenticated work ...
-await client.logout(); // drop auth, keep transport
-await client.detach(); // close transport
-```
 
 #### Execution Methods
 
@@ -445,46 +413,9 @@ Terminate a running pipeline.
 
 Get the current status of a running pipeline.
 
-##### `validate(options: { pipeline: PipelineConfig | Record<string, unknown>; source?: string }): Promise<ValidationResult>`
-
-Validate a pipeline configuration without starting it: a pre-flight check before `use()`. Returns a `ValidationResult` with `errors` and `warnings` arrays (plus any extra engine fields). A pipeline will not execute while it has `errors`; `warnings` are non-fatal.
-
-```typescript
-const result = await client.validate({ pipeline });
-if (result.errors.length > 0) {
-	console.error('Pipeline invalid:', result.errors);
-} else {
-	const { token } = await client.use({ pipeline });
-}
-```
-
-##### `restart(options: { token?: string; projectId: string; source: string; pipeline: Record<string, unknown> }): Promise<void>`
-
-Restart a running pipeline with a new configuration. Looks up the existing task by project/source, terminates it, and starts a new execution in one server round-trip. `token` is optional and resolved server-side if omitted.
-
-```typescript
-await client.restart({ projectId: 'proj-123', source: 'input', pipeline });
-```
-
-##### `getTaskToken(options: { projectId: string; source: string }): Promise<string | undefined>`
-
-Resolve a running task's token from its project ID and source component. The token is required for operations like `terminate()` and `restart()`. Returns `undefined` if no task is currently running for that project/source.
-
-```typescript
-const token = await client.getTaskToken({ projectId: 'proj-123', source: 'input' });
-```
-
-##### `getTaskPipeline(token: string): Promise<Record<string, unknown> | undefined>`
-
-Return the unresolved pipeline configuration for a running task. The pipeline is returned exactly as stored: `${ROCKETRIDE_*}` placeholders are **not** substituted, so no secrets are included. Returns `undefined` if the task is not found.
-
-```typescript
-const pipeline = await client.getTaskPipeline(token);
-```
-
 #### Data Methods
 
-##### `send(token: string, data: string | Uint8Array, objinfo?: Record<string, any>, mimetype?: string): Promise<PIPELINE_RESULT | undefined>`
+##### `send(token: string, data: string | Uint8Array, objinfo?: Record<string, any>, mimetype?: string): Promise<PIPELINE_RESULT>`
 
 Send data directly to a pipeline.
 
@@ -512,33 +443,6 @@ Upload multiple files in parallel.
 
 Create a streaming data pipe for sending large datasets.
 
-##### Streaming callback (`onSSE`)
-
-`pipe()`, `send()`, and `chat()` accept a trailing `onSSE` callback that fires for each server-sent event (e.g. token-by-token AI output) while the request is in flight. The callback signature is the same in every case:
-
-```typescript
-onSSE?: (type: string, data: Record<string, unknown>) => Promise<void>
-```
-
-It is the last positional parameter on `pipe()` and `send()`, and a field on the `chat()` options object:
-
-- `send(token, data, objinfo?, mimetype?, onSSE?)`
-- `pipe(token, objinfo?, mimeType?, provider?, onSSE?)`
-- `chat({ token, question, onSSE? })`
-
-**Example: stream a chat answer:**
-
-```typescript
-const response = await client.chat({
-	token,
-	question,
-	onSSE: async (type, data) => {
-		// `type` is the SSE event name; `data` is the event payload.
-		console.log('sse', type, data);
-	},
-});
-```
-
 #### Chat Methods
 
 ##### `chat(options: { token: string, question: Question }): Promise<PIPELINE_RESULT>`
@@ -560,32 +464,14 @@ const response = await client.chat({ token: 'chat-token', question });
 
 #### Event Methods
 
-##### `setEvents(token: string, eventTypes: string[], pipeId?: number): Promise<void>`
+##### `setEvents(token: string, eventTypes: string[]): Promise<void>`
 
-Subscribe to specific types of events from the server. The optional `pipeId` scopes the subscription to a single pipe within the task.
+Subscribe to specific types of events from the server.
 
 **Example:**
 
 ```typescript
 await client.setEvents('task-token', ['apaevt_status_upload', 'apaevt_status_processing']);
-```
-
-##### `addMonitor(key: MonitorKey, types: string[]): Promise<void>`
-
-Add a reference-counted monitor subscription. If the key already exists, the new `types` are merged with the existing set and the merged set is sent to the server. `MonitorKey` is either `{ token: string }` for a running task or `{ projectId: string; source: string; pipeId?: number }` for a project/source.
-
-```typescript
-await client.addMonitor({ token }, ['summary', 'flow']);
-// or, before the task is running, by project/source:
-await client.addMonitor({ projectId: 'proj-123', source: 'input' }, ['summary']);
-```
-
-##### `removeMonitor(key: MonitorKey, types: string[]): Promise<void>`
-
-Remove a monitor subscription. Decrements the reference counts for the given `types`; a type is only unsubscribed from the server once its count reaches zero. The `key` must match the one passed to `addMonitor()`.
-
-```typescript
-await client.removeMonitor({ token }, ['flow']);
 ```
 
 #### Connectivity Methods
@@ -618,25 +504,23 @@ Question builder for AI chat operations.
 
 #### Methods
 
-> The `add*` builder methods mutate the `Question` in place and return `void`: they do **not** support chaining (e.g. `q.addQuestion(...).addContext(...)` will not compile).
-
-##### `addQuestion(text: string): void`
+##### `addQuestion(text: string): Question`
 
 Add the main question text.
 
-##### `addInstruction(title: string, instruction: string): void`
+##### `addInstruction(subtitle: string, instructions: string): Question`
 
 Add specific instructions to guide the AI's response.
 
-##### `addExample(given: string, result: any): void`
+##### `addExample(given: string, result: any): Question`
 
 Provide an example of the desired response format.
 
-##### `addContext(context: string | Record<string, any>): void`
+##### `addContext(context: string | Record<string, any>): Question`
 
 Add contextual information for the AI.
 
-##### `addHistory(history: QuestionHistory): void`
+##### `addHistory(history: QuestionHistory): Question`
 
 Add conversation history for context.
 
@@ -649,11 +533,11 @@ Add conversation history for context.
 }
 ```
 
-##### `addGoal(goal: string): void`
+##### `addGoal(goal: string): Question`
 
 Add a goal to guide the AI's response.
 
-##### `addDocuments(documents: Doc | Doc[]): void`
+##### `addDocuments(documents: Doc | Doc[]): Question`
 
 Add one or more documents to the question context.
 
@@ -712,8 +596,7 @@ interface PIPELINE_RESULT {
 
 ```typescript
 interface TASK_STATUS {
-	state: number; // TASK_STATE enum: 0 NONE, 1 STARTING, 2 INITIALIZING, 3 RUNNING, 4 STOPPING, 5 COMPLETED, 6 CANCELLED
-	completed: boolean; // true once the task has finished (prefer this over comparing `state`)
+	state: 'running' | 'completed' | 'failed' | 'terminated';
 	progress?: number; // Progress percentage (0-100)
 	message?: string; // Status message
 	[key: string]: any; // Additional status fields
@@ -736,6 +619,7 @@ The SDK supports automatic MIME type detection for common file extensions:
 
 For data pipes, MIME types determine processing lanes:
 
+- `application/rocketride-tag` → RocketRide tag stream format
 - `application/rocketride-question` → AI chat question format
 - `text/*` → Text lane
 - `image/*` → Image lane
@@ -769,7 +653,7 @@ async function myChat(myQuestion: string): Promise<string> {
 	// Issue the chat request
 	const response = await client.chat({ token, question });
 
-	// `answers` is a dynamic field — present only when the pipeline's result_types maps it. Treat it as optional.
+	// Check if we got answers
 	if (!response.answers || response.answers.length === 0) {
 		return 'No answer received';
 	}
@@ -962,12 +846,12 @@ const client = new RocketRideClient({
 ```typescript
 // Request status
 const status = await client.getTaskStatus(token);
-const numericState = status.state; // number from the TASK_STATE enum (e.g. 3 = RUNNING, 5 = COMPLETED)
+const state = status.state; // 'running', 'completed', 'failed', etc.
 
-// Poll for progress — `completed` is a boolean that flips true once the task finishes
+// Poll for progress
 while (true) {
 	const status = await client.getTaskStatus(token);
-	if (status.completed) {
+	if (['completed', 'failed', 'terminated'].includes(status.state)) {
 		break;
 	}
 	await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -1028,57 +912,6 @@ Common error scenarios:
 - **Execution errors**: Pipeline execution failures
 - **Upload errors**: File upload failures
 
-### Exception Classes
-
-The SDK exports a typed exception hierarchy so you can catch errors at the right level of specificity. All extend the base `DAPException`, which carries the raw server response on a `dapResult: Record<string, unknown>` property.
-
-```
-DAPException                      // base — wraps any DAP error response (.dapResult)
-└─ RocketRideException            // root of all RocketRide-specific errors
-   ├─ ConnectionException         // connect/transport problems, dropped connections
-   │  └─ AuthenticationException  // bad API key / credentials
-   ├─ PipeException               // data pipe / upload / streaming failures
-   ├─ ExecutionException          // pipeline start/run/management failures
-   └─ ValidationException         // invalid pipeline configuration
-```
-
-All are importable from the package root:
-
-```typescript
-import {
-	DAPException,
-	RocketRideException,
-	ConnectionException,
-	AuthenticationException,
-	PipeException,
-	ExecutionException,
-	ValidationException,
-} from 'rocketride';
-```
-
-**Which methods throw what:**
-
-- `AuthenticationException`: thrown by `login()` (and therefore `connect()`) on auth failure. In persist mode the client catches it, calls `onConnectError`, and does **not** retry, so the app can fix credentials and reconnect.
-- `ConnectionException`: `attach()`/`connect()` transport failures; also delivered to the `onConnectError` constructor callback (whose argument is typed `ConnectionException`).
-
-Catch the most specific type first, then fall back to a broader one:
-
-```typescript
-import { AuthenticationException, RocketRideException } from 'rocketride';
-
-try {
-	await client.connect('your-api-key');
-} catch (err) {
-	if (err instanceof AuthenticationException) {
-		console.error('Bad credentials:', err.message);
-	} else if (err instanceof RocketRideException) {
-		console.error('RocketRide error:', err.message, err.dapResult);
-	} else {
-		throw err;
-	}
-}
-```
-
 ## Performance Considerations
 
 - File uploads are parallelized (all files uploaded concurrently)
@@ -1089,7 +922,7 @@ try {
 
 ## Requirements
 
-- Node.js 18+ recommended. The package declares no hard `engines` floor; the `await using` / `Symbol.asyncDispose` examples require Node 20+ and TypeScript 5.2+.
+- Node.js 16.0.0 or higher
 - WebSocket connection to RocketRide DAP server
 - Valid API key for authentication
 

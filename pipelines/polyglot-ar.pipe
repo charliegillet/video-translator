@@ -3,6 +3,7 @@
     {
       "id": "dropper_1",
       "provider": "dropper",
+      "name": "Dropper",
       "config": {
         "hideForm": true,
         "mode": "Source",
@@ -11,12 +12,8 @@
       },
       "ui": {
         "position": {
-          "x": 20,
-          "y": 200
-        },
-        "measured": {
-          "width": 150,
-          "height": 66
+          "x": 12,
+          "y": 18
         },
         "nodeType": "default",
         "formDataValid": true
@@ -25,31 +22,29 @@
     {
       "id": "parse_1",
       "provider": "parse",
+      "name": "Parser",
       "config": {
         "parameters": {}
+      },
+      "ui": {
+        "position": {
+          "x": 242,
+          "y": 12
+        },
+        "nodeType": "default",
+        "formDataValid": true
       },
       "input": [
         {
           "lane": "tags",
           "from": "dropper_1"
         }
-      ],
-      "ui": {
-        "position": {
-          "x": 240,
-          "y": 200
-        },
-        "measured": {
-          "width": 150,
-          "height": 66
-        },
-        "nodeType": "default",
-        "formDataValid": true
-      }
+      ]
     },
     {
       "id": "audio_transcribe_1",
       "provider": "audio_transcribe",
+      "name": "Transcribe",
       "config": {
         "profile": "default",
         "default": {
@@ -58,146 +53,131 @@
           "model": "base",
           "silence_threshold": 0.25,
           "vad_level": 1,
-          "language": "en"
+          "language": "ar"
         },
         "parameters": {}
+      },
+      "ui": {
+        "position": {
+          "x": 472,
+          "y": 38
+        },
+        "nodeType": "default",
+        "formDataValid": true
       },
       "input": [
         {
           "lane": "video",
           "from": "parse_1"
         }
-      ],
-      "ui": {
-        "position": {
-          "x": 460,
-          "y": 200
-        },
-        "measured": {
-          "width": 150,
-          "height": 66
-        },
-        "nodeType": "default",
-        "formDataValid": true
-      }
+      ]
     },
     {
       "id": "question_1",
       "provider": "question",
+      "name": "Question",
       "config": {
         "type": "question",
         "parameters": {}
+      },
+      "ui": {
+        "position": {
+          "x": 702,
+          "y": 47
+        },
+        "nodeType": "default",
+        "formDataValid": true
       },
       "input": [
         {
           "lane": "text",
           "from": "audio_transcribe_1"
         }
-      ],
-      "ui": {
-        "position": {
-          "x": 680,
-          "y": 200
-        },
-        "measured": {
-          "width": 150,
-          "height": 66
-        },
-        "nodeType": "default",
-        "formDataValid": true
-      }
+      ]
     },
     {
       "id": "prompt_1",
       "provider": "prompt",
+      "name": "Prompt",
       "config": {
         "instructions": [
           "You are given the raw transcript of a short World Cup fan clip in its original language. ALWAYS write your entire response in English, no matter what language the transcript is in. Respond with exactly three numbered lines and nothing else: 1) Source language: name the language in English. 2) English translation: translate the transcript into natural English. 3) Moment: the single most exciting or funniest moment in one short English line. If the audio is too unclear to be sure of the language, set the language to 'unclear' and leave the moment empty. Do not invent anything not in the transcript."
         ],
         "parameters": {}
       },
+      "ui": {
+        "position": {
+          "x": 932,
+          "y": 20.5
+        },
+        "nodeType": "default",
+        "formDataValid": true
+      },
       "input": [
         {
           "lane": "questions",
           "from": "question_1"
         }
-      ],
+      ]
+    },
+    {
+      "id": "llm_openai_1",
+      "provider": "llm_openai",
+      "name": "OpenAI",
+      "config": {
+        "profile": "openai-5-2",
+        "openai-5-2": {
+          "apikey": "${ROCKETRIDE_OPENAI_KEY}"
+        },
+        "parameters": {}
+      },
       "ui": {
         "position": {
-          "x": 900,
-          "y": 200
-        },
-        "measured": {
-          "width": 150,
-          "height": 66
+          "x": 1162,
+          "y": 47
         },
         "nodeType": "default",
         "formDataValid": true
-      }
-    },
-    {
-      "id": "llm_anthropic_1",
-      "provider": "llm_anthropic",
-      "config": {
-        "profile": "claude-sonnet-4-6",
-        "claude-sonnet-4-6": {
-          "apikey": "${ROCKETRIDE_ANTHROPIC_KEY}"
-        },
-        "parameters": {}
       },
       "input": [
         {
           "lane": "questions",
           "from": "prompt_1"
         }
-      ],
-      "ui": {
-        "position": {
-          "x": 1120,
-          "y": 200
-        },
-        "measured": {
-          "width": 150,
-          "height": 66
-        },
-        "nodeType": "default",
-        "formDataValid": true
-      }
+      ]
     },
     {
       "id": "response_answers_1",
       "provider": "response_answers",
+      "name": "Return Answers",
       "config": {
         "laneName": "answers"
+      },
+      "ui": {
+        "position": {
+          "x": 1390,
+          "y": 50
+        },
+        "nodeType": "default",
+        "formDataValid": true
       },
       "input": [
         {
           "lane": "answers",
-          "from": "llm_anthropic_1"
+          "from": "llm_openai_1"
         }
-      ],
-      "ui": {
-        "position": {
-          "x": 1340,
-          "y": 200
-        },
-        "measured": {
-          "width": 150,
-          "height": 66
-        },
-        "nodeType": "default",
-        "formDataValid": true
-      }
+      ]
     }
   ],
-  "name": "Polyglot Cup",
-  "description": "dropper -> parse -> audio_transcribe -> question -> prompt -> llm_anthropic -> response_answers. Parallel-transcribe many short World Cup fan clips in their native language, then translate + tag the moment to English.",
+  "name": "Polyglot Cup (Arabic)",
+  "description": "dropper -> parse -> audio_transcribe -> question -> prompt -> llm_openai -> response_answers. OpenAI variant of Polyglot Cup: parallel-transcribe short World Cup fan clips in their native language, then translate + tag the moment to English. Swap target for the live llm_anthropic -> llm_openai closer.",
   "source": "dropper_1",
-  "project_id": "eb388d21-744a-4652-99e6-0380d5ee9198",
-  "viewport": {
-    "x": 0,
-    "y": 0,
-    "zoom": 1
-  },
-  "version": 1
+  "project_id": "6e335171-1165-5b27-8d52-c2a599508d9a",
+  "version": 1,
+  "isLocked": false,
+  "snapToGrid": true,
+  "snapGridSize": [
+    10,
+    10
+  ]
 }

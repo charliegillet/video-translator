@@ -2,13 +2,13 @@
 
 # Polyglot Cup — build-ready plan
 
-**Demo:** ~30 short World Cup fan/creator clips in 5+ languages fan out into ONE RocketRide Cloud pipeline. Whisper transcribes each in its native language in parallel, an LLM translates every transcript to English and tags language + the one funniest/most-exciting moment, and the booth screen fills a grid: one global tournament, every nation's voice, rendered into one English insight feed. Closer: swap `llm_anthropic` to `llm_openai` in one line, live, while the same Whisper model server keeps running underneath.
+**Demo:** ~30 short World Cup fan/creator clips in 5+ languages fan out into ONE RocketRide pipeline running on the **local IDE-managed engine**. Whisper (faster-whisper, in-process on CPU) transcribes each in its native language, an LLM translates every transcript to English and tags language + the one funniest/most-exciting moment, and the booth screen fills a grid: one global tournament, every nation's voice, rendered into one English insight feed. Closer: swap `llm_anthropic` to `llm_openai` in one line, live, while the same warm in-process Whisper model keeps transcribing underneath.
 
 **Status of this plan (CORRECTED 2026-06-18):** the source of truth is `pipelines/polyglot.pipe` (validated 1/1). This plan's original skeleton was wrong on two points and has been patched to match the validated pipe:
 1. **The audio_transcribe config key is `model`, NOT `mode`.** The live driver reads it at `audio_transcribe/IGlobal.py:105` (`config.get('model', 'base')`). The node's internal `preconfig.profiles` block uses `mode` (which is what misled the original plan), but the driver never reads that key, and the generated schema (`transcribe.model`) plus every working pipe use `model`. Setting `mode` in a pipe is silently ignored.
 2. **`prompt` cannot be fed from a `text` lane** (catalog lane `text: []` emits nothing). The transcript goes through a `question` node (`text -> questions`) first, then `prompt` injects the translate-and-tag instruction. See the corrected shape below.
 
-Verify the rest against the LIVE cloud engine via `validate()` before the event (see Build Checklist).
+**Execution mode: LOCAL** (switched 2026-06-18) — this runs on the IDE-managed local engine, NOT RocketRide Cloud. Verify the rest with the offline validator (`tools/validate_pipes.py`) plus a live run in the IDE before the event (see Build Checklist). Avoid the SDK `validate()` under the current SDK 1.2.0 ↔ engine 3.2.2 skew. Everything below runs on the local engine; the only thing that leaves this machine is the LLM provider's API call.
 
 ---
 
@@ -20,7 +20,7 @@ But this audience yawns at transcription, and they're right to: STT is a ~$4.4B 
 
 **Multimodal AND multilingual in a single shot.** Whisper transcribes each clip in its source language, an LLM unifies all of them into one English insight feed with language tags and sentiment. That is literally the global media-monitoring / compliance / "ingest the world's audio, get unified insight" workflow enterprises budget for. The Microsoft-tier buyers recognize it instantly. The VCs see throughput (30 clips to a brief in ~60s). The engineers see the parallel fan-out.
 
-And it acts out the RocketRide tagline. "Any model, any tool, no vendor lock-in" stops being a slogan the moment Charlie swaps `llm_anthropic` to `llm_openai` in one config block, live, and the same Whisper model server keeps running underneath. That swap is the closer, kept distinct from the parallelism story so the two claims don't compete.
+And it acts out the RocketRide tagline. "Any model, any tool, no vendor lock-in" stops being a slogan the moment Charlie swaps `llm_anthropic` to `llm_openai` in one config block, live, and the same warm in-process Whisper model keeps transcribing underneath. That swap is the closer, kept distinct from the parallelism story so the two claims don't compete.
 
 **Why this over a plain English fan-reaction wall:** the monolingual wall collapses to "captions appeared." Polyglot Cup adds the one capability that is differentiated, defensible, and timely-only-in-2026 (transcribe-and-translate fan-out across nations) on top of the same crowd-pleasing content. Same virality, plus a moat.
 
@@ -34,11 +34,11 @@ And it acts out the RocketRide tagline. "Any model, any tool, no vendor lock-in"
 
 ## 2. The 30-60 second booth script (second-by-second)
 
-**Pre-state (before any attendee walks up):** the dropper browser page (variant A) OR the SSE grid page (variant B) is already open full-screen on the booth monitor, large tiles. The pipeline has already been started once with `ttl=0` and pre-warmed with 1-2 throwaway clips (Whisper cold start already paid). A folder of ~30 pre-staged clips sits on the desktop ready to drag.
+**Pre-state (before any attendee walks up):** the dropper browser page (variant A) OR the SSE grid page (variant B) is already open full-screen on the booth monitor, large tiles. The pipeline has already been started once with `ttl=0` and pre-warmed with 1-2 throwaway clips (the one-time Whisper model download/load already paid). A folder of ~30 pre-staged clips sits on the desktop ready to drag.
 
 | Time | Operator action | What the attendee sees | Charlie says |
 |---|---|---|---|
-| 0:00 | Tap a key / grab attention. | Grid of ~30 greyed clip thumbnails (Merlin the duck, Norway escalator, German fans at Buffalo Wild Wings, Brazil, Japan), each labeled with a flag/language. | "The World Cup's happening right now. Here are thirty real fan clips from this week, every language. One cloud pipeline. Watch." |
+| 0:00 | Tap a key / grab attention. | Grid of ~30 greyed clip thumbnails (Merlin the duck, Norway escalator, German fans at Buffalo Wild Wings, Brazil, Japan), each labeled with a flag/language. | "The World Cup's happening right now. Here are thirty real fan clips from this week, every language. One pipeline, running right here on this laptop. Watch." |
 | 0:05 | Drag the one folder of ~30 clips onto the dropper page (variant A), or hit the run key that fires `send_files()` (variant B). | Every tile flips to a pulsing 'transcribing' state at once. | "It's transcribing all thirty at once, each in its own language." |
 | 0:12 | Point at tiles as native-language transcripts land. | Tiles pop into color in a cascade as transcripts stream in: Spanish text, Norwegian text, German text appear in the tiles. | "That's Spanish, that's Norwegian, that's the duck guy in Mexico." |
 | 0:25 | Point at the insight column filling. | Each tile flips from native transcript to an English translation + a one-line tagged moment + language tag + sentiment. | "Now every clip is translated to English and tagged with the funniest moment. Thirty clips, five-plus languages, one searchable English feed, in about a minute." |
@@ -67,9 +67,9 @@ And it acts out the RocketRide tagline. "Any model, any tool, no vendor lock-in"
 - `llm_anthropic`: `questions -> answers`, capability invoke
 - `response_text` (`response_text://`) / `response_answers` (`response_answers://`): terminals. Both exist (plus `response_table`, `response_documents`, etc.).
 
-**CRITICAL config correction (was inverted):** the audio_transcribe Whisper-size key is **`model`** (tiny/base/small/medium/large-v3), default `base`, NOT `mode`. Grounded in the live driver: `audio_transcribe/IGlobal.py:105` reads `config.get('model', 'base')`. The node's internal `preconfig.profiles` block uses `mode`, but the driver never reads it; a `mode` key in your pipe is silently ignored. The default profile buffers `min_seconds: 240` / `max_seconds: 300`; for sub-minute clips the whole clip is one chunk flushed on stream end, so no tuning is strictly required, but you may set lower bounds if a short clip ever stalls. Set `vad_level: 1` (skips minor background noise, good for crowd audio). No API key needed for transcription on cloud (routes to the GPU model server).
+**CRITICAL config correction (was inverted):** the audio_transcribe Whisper-size key is **`model`** (tiny/base/small/medium/large-v3), default `base`, NOT `mode`. Grounded in the live driver: `audio_transcribe/IGlobal.py:105` reads `config.get('model', 'base')`. The node's internal `preconfig.profiles` block uses `mode`, but the driver never reads it; a `mode` key in your pipe is silently ignored. The default profile buffers `min_seconds: 240` / `max_seconds: 300`; for sub-minute clips the whole clip is one chunk flushed on stream end, so no tuning is strictly required, but you may set lower bounds if a short clip ever stalls. Set `vad_level: 1` (skips minor background noise, good for crowd audio). No API key needed for transcription. **Locally** (engine started without `--modelserver`), the node loads faster-whisper **in-process and transcribes on CPU** (int8 on Apple silicon — there is no CUDA/MPS path; `whisper.py:213-234,577-599`). The `base` model (~0.7GB) downloads once from HuggingFace into `~/.cache/huggingface/hub` on first run, then stays warm in memory and is reused for every clip.
 
-**CRITICAL language gap (open risk, must decide before going live):** the driver reads `config.get('language', 'en')` (`IGlobal.py:106`) and passes it straight to Whisper. **There is no auto-detect path: an unset `language` forces English.** The validated `pipelines/polyglot.pipe` currently sets NO `language`, so as written it would transcribe every clip as English, breaking the multilingual core. Fix before the event by either (a) **grouping clips by language and running one pipe per language with `language` set per bucket** (es/pt/de/fr/ja/no), which is the recommended, most-accurate, and most on-message path (it IS the polyglot story); or (b) testing whether `"language": ""`/`null` flows through to Whisper as auto-detect on the live cloud engine (unverified, riskier). For the dropper booth, (a) means dropping one language's folder at a time into its own pre-warmed pipe, or having per-language pipes ready.
+**CRITICAL language gap (open risk, must decide before going live):** the driver reads `config.get('language', 'en')` (`IGlobal.py:106`) and passes it straight to Whisper. **There is no auto-detect path: an unset `language` forces English.** The validated `pipelines/polyglot.pipe` currently sets NO `language`, so as written it would transcribe every clip as English, breaking the multilingual core. Fix before the event by either (a) **grouping clips by language and running one pipe per language with `language` set per bucket** (es/pt/de/fr/ja/no), which is the recommended, most-accurate, and most on-message path (it IS the polyglot story); or (b) testing whether `"language": ""`/`null` flows through to Whisper as auto-detect on the local engine (unverified, riskier). For the dropper booth, (a) means dropping one language's folder at a time into its own pre-warmed pipe, or having per-language pipes ready.
 
 **Polyglot language handling:** pre-set `language` per clip batch (es/pt/de/fr/no) rather than trusting auto-detect on short noisy crowd audio. Practically: either (a) run one pipeline with `language` omitted to let Whisper auto-detect (simplest, riskier on noise), or (b) group clips by language and set `language` per batch. Recommend (b) for reliability: it's the polyglot story AND it's more accurate. The LLM also names the language in its output as a cross-check.
 
@@ -114,7 +114,7 @@ This is a readable mirror of the validated `pipelines/polyglot.pipe` (the `.pipe
 
 Notes: (1) `language` is shown as `es` for illustration; per the language gap above, set it per clip bucket (or run a pipe per language). (2) `prompt`'s `instructions` array sits at config top level (not under a profile), matching the validated pipe. (3) the validated pipe uses `claude-sonnet-4-6`; `claude-haiku-4-5` is a faster/cheaper booth alternative if 30-clip latency bites (swap the `profile` and the matching profile key).
 
-Run: `client.use(filepath='polyglot.pipe', ttl=0, use_existing=True)` once -> open the dropper URL printed to the Project Log -> drag the pre-staged clips in. The dropper renders results in its own browser across JSON/text/table/image tabs. This is the most legible 30-second walk-up and needs no client code.
+Run (booth path, zero client code): open THIS folder in the RocketRide IDE (so the engine gets `.env` and the `${ROCKETRIDE_*}` keys resolve) and press ▶ on the dropper node -> the IDE opens the dropper UI at `http://localhost:<data_port>/dropper?auth=<public_auth>` (the data HTTP server defaults to port 5567, separate from the engine's ephemeral control port; the IDE fills in `{host}` as localhost — the engine only substitutes `{token}`/`{public_auth}`) -> drag the pre-staged clips in. The dropper renders results in its own browser across JSON/text/table/image tabs. Set `ttl=0` so the warmed pipeline survives booth lulls (the 15-min idle kill applies to the local engine too). Run from a SINGLE IDE: two RocketRide extensions on one local engine fight over the pipeline lifecycle and cause a start/SIGTERM/restart loop. This is the most legible 30-second walk-up and needs no client code.
 
 ### Skeleton B — SCRIPTED PARALLEL (webhook + send_files, custom grid via SSE) — for the cascade visual
 
@@ -132,7 +132,7 @@ result = await client.use(filepath='polyglot.pipe', ttl=0, use_existing=True,
                           pipelineTraceLevel='summary')
 token = result['token']
 files = [ ...30 local clip paths... ]
-# uploads all in parallel (default concurrency 64); each file becomes a record
+# uploads all files concurrently (no client-side cap; the engine queues them); each file becomes a record
 # streaming the same graph. Pass on_sse to render tiles as transcripts/answers land.
 results = await client.send_files(files, token, on_sse=on_event)
 ```
@@ -145,11 +145,11 @@ results = await client.send_files(files, token, on_sse=on_event)
 
 ## 4. Data prep
 
-**Hard constraint (R2, verified):** there is NO YouTube node, NO URL/video-download node, NO web-fetch source node in RocketRide. `tool_apify`/`tool_firecrawl`/`tool_http_request` are agent tools (classType tool, no data lanes), not pipeline sources. So clips MUST be pre-downloaded to local files. This is the #1 de-risk item. Also: `filesys://` source is `nosaas`/`noremote` — it CANNOT run on cloud. Do not author it.
+**Hard constraint (R2, verified):** there is NO YouTube node, NO URL/video-download node, NO web-fetch source node in RocketRide. `tool_apify`/`tool_firecrawl`/`tool_http_request` are agent tools (classType tool, no data lanes), not pipeline sources. So clips MUST be pre-downloaded to local files. This is the #1 de-risk item. (Aside: `filesys://` source is `nosaas`/`noremote`, i.e. self-host/local-only — it WOULD run on this local engine but NOT on cloud. We use `dropper` regardless, so it doesn't matter here; just don't reach for filesys.)
 
-**How files enter the cloud pipeline (3 verified source nodes):**
-1. `dropper` — best for booth. Browser drag-and-drop UI, URL+key printed to Project Log on start, renders results in-browser. Zero client code. (Skeleton A)
-2. `webhook` — programmatic, driven by `client.send_files(files, token)` which uploads many files in parallel (default concurrency 64). (Skeleton B)
+**How files enter the pipeline (3 verified source nodes):**
+1. `dropper` — best for booth. Browser drag-and-drop UI; the IDE opens it at `http://localhost:<data_port>/dropper?auth=<public_auth>` on run and renders results in-browser. Zero client code. (Skeleton A)
+2. `webhook` — programmatic, driven by `client.send_files(files, token)` which uploads all files concurrently (no client-side cap; the engine queues them). (Skeleton B)
 3. `chat` — questions only, not for files.
 
 **Clip set: ~30 clips, fan/creator UGC only (rights-safe), grouped by language.** NOT FIFA broadcast / FOX / Telemundo / highlight rips (FIFA Content-ID enforces those, even on fan-shot celebration clips). Fan/creator reaction content is both lower-risk and more visually compelling (faces and crowds, not pitch action). Treat as transient internal demo footage; do not redistribute or record-and-publish the booth screen.
@@ -169,7 +169,7 @@ Aim for ~5-6 clips per language across 5-6 languages = 30. Curate toward the cle
 1. `yt-dlp` each clip to mp4 (or extract audio to mp3/wav). Keep them under ~1 minute.
 2. Sort into per-language subfolders so you can run/label by `language` batch.
 3. Sanity-check audio is intelligible; drop garbled ones.
-4. Pre-test the EXACT clips through the live cloud pipeline (transcription + translation) and fix any that mis-transcribe before the event. Pre-testing the actual clip set is non-negotiable.
+4. Pre-test the EXACT clips through the local pipeline in the IDE (transcription + translation) and fix any that mis-transcribe before the event. Pre-testing the actual clip set is non-negotiable.
 
 ---
 
@@ -177,9 +177,9 @@ Aim for ~5-6 clips per language across 5-6 languages = 30. Curate toward the cle
 
 **Be honest on stage — two distinct facts, only one documented for the multi-clip case:**
 
-**DOCUMENTED + RELIABLE (use this):** The engine spawns an independent execution context per incoming task and concurrent requests to the same pipeline don't queue behind each other. The bulletproof pattern: `client.use()` ONCE, then `client.send_files([...30...], token)` uploads all clips in parallel (default concurrency 64); each file becomes a record streaming the same graph. The engine streams records across threads and runs independent branches concurrently.
+**DOCUMENTED + RELIABLE (use this):** The engine spawns an independent execution context per incoming task and concurrent requests to the same pipeline don't queue behind each other. The bulletproof pattern: `client.use()` ONCE, then `client.send_files([...30...], token)` uploads all clips concurrently (no client-side cap; the engine queues them); each file becomes a record streaming the same graph. The engine streams records across threads and runs independent branches concurrently.
 
-**THE HONEST BOTTLENECK:** transcription runs on ONE shared Whisper model on the GPU model server, serialized through a global lock (confirmed in transcribe.py / README: a single loaded model shared safely across instances). So 30 clips pipeline through but the GPU step is effectively serialized. With `model: "base"` on sub-minute clips each transcription is fast, so 30 still finishes quickly, but it is NOT 30x wall-clock on the GPU. **Frame it as "fan-out orchestration with a shared warm model," never "30 GPUs."**
+**THE HONEST BOTTLENECK (even more modest locally):** transcription runs on ONE in-process Whisper model instance, serialized by a lock — the node's `transcribe_lock` plus faster-whisper's own per-model lock, since faster-whisper is not thread-safe (`audio_transcribe/IGlobal.py:56-66`, `whisper.py:367-381`). Locally that model is **faster-whisper on CPU (int8 on Apple silicon) — zero GPUs in the Whisper path on this Mac.** So 30 clips fan out at the orchestration layer but transcription is single-model, one-at-a-time on CPU. With `model: "base"` on sub-minute clips each transcription is quick, so 30 still finish in good time, but it is NOT 30 parallel transcriptions. **Frame it as "fan-out orchestration across one warm in-process model," never "30 GPUs" (there are none).**
 
 **Do NOT claim** that dropping 30 files into one token spawns 30 concurrent transcribe workers — per-record worker concurrency is undocumented. Rely on the send_files parallel-upload pattern for the visible parallelism story.
 
@@ -190,22 +190,22 @@ Aim for ~5-6 clips per language across 5-6 languages = 30. Curate toward the cle
 
 ---
 
-## 6. Cloud de-risking
+## 6. Local de-risking
 
-**Warm-up (pays the cold start):** cloud reloads models per run; Whisper downloads from HuggingFace on first use then is cached and shared via a global lock. Object-detection-class cold start was ~20s on cloud; budget similar for the first transcription. So: start the pipeline (`use`, `ttl=0`) and push 1-2 throwaway clips through BEFORE doors open, so the Whisper model is loaded and warm.
+**Warm-up (pays the one-time model load):** locally the Whisper model is loaded ONCE (in `beginGlobal`) and reused for every clip — there is NO per-run reload. The first run pays a one-time cost: the `base` model downloads from HuggingFace (~0.7GB, only if not already cached in `~/.cache/huggingface/hub`) and loads into memory; after that it stays warm in-process. So: start the pipeline (`ttl=0`) and push 1-2 throwaway clips through BEFORE doors open so the model is downloaded and warm. Budget extra for CPU transcription latency (no GPU on this Mac), so warming matters more, not less. (The old "~20s cold start" figure was a cloud number and is unverified; time your actual clips locally.)
 
-**Idle death:** cloud pipelines die after ~15 min idle unless `ttl` is set. **Set `ttl=0` in `.use()` (no timeout)** so the warmed pipeline survives booth lulls. Start it ONCE with `use_existing=True` to reuse; do NOT use/terminate per attendee (`use()` is expensive).
+**Idle death (applies locally too):** the engine kills a pipeline after ~15 min idle — `CONST_DEFAULT_TTL = 900s`, checked every 60s by `_monitor_ttl` (`constants.py:55-56`, `task_server.py:314-370`). This is core engine behavior, identical on the local engine, NOT a cloud-only quirk. **Set `ttl=0` on the run (no timeout)** so the warmed pipeline survives booth lulls. Start it ONCE and reuse; do NOT start/terminate per attendee.
 
 **Never block the async event loop** (the #1 runtime failure, bites specifically after 30-60s idle = exactly a booth scenario): no `input()`, `time.sleep`, sync `requests.get`, `readFileSync` in the async flow — they freeze the websocket keepalive and the connection drops (~60s) with "Connection closed." Use `asyncio.sleep` / `run_in_executor`.
 
 **Submitted != succeeded:** `use()` only STARTS the pipeline. The push call (send_files/chat) returns the result inline; poll `get_task_status` to a terminal state (5=COMPLETED, 6=CANCELLED) for long work before claiming a result. `await asyncio.sleep(1)` between polls.
 
-**Validate is mandatory and cheap:** `validate()` MUST return 0 errors before any run. Missing required config (e.g. no apikey) is a validation failure.
+**Validate is mandatory and cheap:** run `tools/validate_pipes.py .` (offline, against the local node catalog in `.rocketride/`) — it MUST report all pipes valid before any run. Avoid the SDK `validate()` under the current SDK 1.2.0 ↔ engine 3.2.2 skew (it returns a spurious `ccode 40`); trust the offline validator plus a live IDE run. Note a missing/unresolved `${ROCKETRIDE_*}` key does NOT fail the static validator — it surfaces at runtime (e.g. the OpenAI 401 we hit when the IDE workspace wasn't this folder, so the engine env lacked the key and `${ROCKETRIDE_OPENAI_KEY}` reached OpenAI literally).
 
 **Graded fallback ladder (have all three ready):**
 1. **Primary:** polished SSE grid (Skeleton B) cascading off real events.
 2. **Fallback 1:** native `dropper` browser tabs (Skeleton A) — same pipeline, zero client code, renders results itself. If your custom grid UI flakes, switch to this.
-3. **Fallback 2:** a **pre-recorded screen capture** of a clean full run (transcribe -> translate -> tag -> model swap). If the noisy-booth network flaps or cloud stalls, play the recording. Record this in advance regardless.
+3. **Fallback 2:** a **pre-recorded screen capture** of a clean full run (transcribe -> translate -> tag -> model swap). If the local engine stalls or a clip mis-transcribes live, play the recording. Record this in advance regardless. (Running locally removes the booth-network dependency for everything except the LLM provider's API call.)
 
 **Pre-record specifically:** one clean end-to-end run including the `llm_anthropic` -> `llm_openai` swap, so the closer is safe even on a bad network.
 
@@ -215,9 +215,9 @@ Aim for ~5-6 clips per language across 5-6 languages = 30. Curate toward the cle
 
 **AI engineers / researchers:**
 - One DAG, typed lanes, streaming execution: records flow through independent branches concurrently across threads.
-- Fan-out via `send_files` (parallel upload, concurrency 64) into one pipeline token; honest bottleneck is the shared warm Whisper model behind a global lock, not 30 GPUs.
+- Fan-out via `send_files` (all files uploaded concurrently, the engine queues) into one pipeline token; honest bottleneck is the single in-process Whisper model behind a lock — locally that's faster-whisper on CPU, not a GPU farm.
 - `pipelineTraceLevel='summary'` gives a `_trace` of every lane write/invoke — verifiable, not a timed render.
-- Whisper on the cloud GPU model server, no API key; swap the LLM provider in one config block.
+- Whisper runs in-process on this machine (faster-whisper, CPU), no API key; swap the LLM provider in one config block. The whole pipeline runs locally except the LLM provider's API call.
 
 **Investors / VCs:**
 - Throughput story: 30 clips, 5+ languages, to one English insight feed in ~60s. The transcript-to-insight / "find the key moment in hours of video" workflow is a named enterprise category (media, legal, research).
@@ -227,7 +227,7 @@ Aim for ~5-6 clips per language across 5-6 languages = 30. Curate toward the cle
 **Enterprise buyers (Microsoft-tier):**
 - This is global media-monitoring / compliance / multilingual ingestion: ingest the world's audio, get unified English insight with source attribution.
 - Governance: every row clicks through to source clip + exact transcript span; the model abstains (`language: unclear`, empty moment) rather than assert anything unsourced. Refusing to hallucinate is the feature.
-- Same pipeline runs 500 support calls in 12 languages or earnings-call risk moments. Self-host and cloud run the IDENTICAL `.pipe`; only endpoint/auth differ. No lock-in at the infra layer either.
+- Same pipeline runs 500 support calls in 12 languages or earnings-call risk moments. The IDENTICAL `.pipe` runs locally (self-host) or on cloud; only endpoint/auth differ (local engine token over `ws://localhost` vs a cloud API key). And we ARE running it on our own hardware right now, which is the strongest possible data-residency answer. (Caveat for completeness: a few `nosaas` nodes like `local_text_output`/`audio_player` are self-host-only; this pipe doesn't use them.) No lock-in at the infra layer either.
 
 ---
 

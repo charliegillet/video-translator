@@ -12,8 +12,8 @@
       },
       "ui": {
         "position": {
-          "x": 12,
-          "y": 18
+          "x": 10,
+          "y": 20
         },
         "nodeType": "default",
         "formDataValid": true
@@ -52,7 +52,8 @@
           "min_seconds": 240,
           "model": "base",
           "silence_threshold": 0.25,
-          "vad_level": 1
+          "vad_level": 1,
+          "language": "fr"
         },
         "parameters": {}
       },
@@ -128,9 +129,7 @@
         "openai-5-2": {
           "apikey": "${ROCKETRIDE_OPENAI_KEY}"
         },
-        "parameters": {
-          "google": {}
-        }
+        "parameters": {}
       },
       "ui": {
         "position": {
@@ -156,24 +155,18 @@
       },
       "ui": {
         "position": {
-          "x": 1390,
-          "y": 50
+          "x": 1392,
+          "y": 47
         },
         "nodeType": "default",
         "formDataValid": true
-      },
-      "input": [
-        {
-          "lane": "answers",
-          "from": "llm_openai_1"
-        }
-      ]
+      }
     }
   ],
-  "name": "Polyglot Cup (OpenAI)",
+  "name": "Polyglot Cup (French)",
   "description": "dropper -> parse -> audio_transcribe -> question -> prompt -> llm_openai -> response_answers. OpenAI variant of Polyglot Cup: parallel-transcribe short World Cup fan clips in their native language, then translate + tag the moment to English. Swap target for the live llm_anthropic -> llm_openai closer.",
   "source": "dropper_1",
-  "project_id": "f1ed7f16-a80b-4f93-bba0-b497c28461aa",
+  "project_id": "84bbcde3-4218-53a5-bd5b-4878ed9b5923",
   "version": 1,
   "isLocked": false,
   "snapToGrid": true,
@@ -181,5 +174,5 @@
     10,
     10
   ],
-  "docRevision": 46
+  "docRevision": 2
 }
