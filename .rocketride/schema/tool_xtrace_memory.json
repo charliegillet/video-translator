@@ -119,7 +119,7 @@
         },
         "show_advanced": {
           "default": false,
-          "description": "Show advanced options. The defaults work for most cases, leave off for a simple setup.",
+          "description": "Show advanced options. The defaults work for most cases — leave off for a simple setup.",
           "enum": [
             true,
             false

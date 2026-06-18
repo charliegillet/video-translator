@@ -4,7 +4,7 @@
   "classType": [
     "embedding"
   ],
-  "description": "A component that transforms text into numerical vector representations using advanced embedding \nmodels. It converts input text, ranging from individual words to entire documents, into high-dimensional \nvectors that capture semantic meaning and relationships. These embeddings enable efficient similarity \nsearches, clustering, and other advanced natural language processing tasks. The text embedder is highly \nconfigurable, supporting various pre-trained models and fine-tuning options, ensuring flexibility for \ndifferent use cases across domains.",
+  "description": "A component that transforms text into numerical vector representations using advanced embedding \nmodels. It converts input text—ranging from individual words to entire documents—into high-dimensional \nvectors that capture semantic meaning and relationships. These embeddings enable efficient similarity \nsearches, clustering, and other advanced natural language processing tasks. The text embedder is highly \nconfigurable, supporting various pre-trained models and fine-tuning options, ensuring flexibility for \ndifferent use cases across domains.",
   "documentation": "https://docs.rocketride.org",
   "icon": "openai.svg",
   "lanes": {

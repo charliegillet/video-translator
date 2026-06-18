@@ -4,7 +4,7 @@
   "classType": [
     "deepagent"
   ],
-  "description": "Managed Deep Agent subagent. Must be wired into a Deep Agent node via the deepagent channel.\nCannot be invoked directly, has no questions lane.",
+  "description": "Managed Deep Agent subagent. Must be wired into a Deep Agent node via the deepagent channel.\nCannot be invoked directly — has no questions lane.",
   "documentation": "https://docs.rocketride.org",
   "icon": "deepagent.svg",
   "invoke": {
@@ -74,7 +74,7 @@
             },
             "description": {
               "default": "",
-              "description": "The orchestrator reads this description to decide when to delegate to this sub-agent. Keep it specific and action-oriented, this is the only signal the orchestrator uses to pick a sub-agent.",
+              "description": "The orchestrator reads this description to decide when to delegate to this sub-agent. Keep it specific and action-oriented — this is the only signal the orchestrator uses to pick a sub-agent.",
               "title": "Description",
               "type": "string"
             }

@@ -1,9 +1,8 @@
 {
   "actions": 0,
-  "capabilities": 3072,
+  "capabilities": 2048,
   "classType": [
-    "store",
-    "tool"
+    "store"
   ],
   "description": "A vector database component for Qdrant, enabling efficient storage and \nretrieval of vector embeddings. It supports similarity search, filtering, \nand management of vector data with high performance and advanced matching capabilities.",
   "documentation": "https://docs.rocketride.org",
@@ -65,13 +64,6 @@
                       "minimum": 0,
                       "title": "Retrieval Score",
                       "type": "number"
-                    },
-                    "serverName": {
-                      "default": "qdrant",
-                      "description": "Namespace for agent-facing tool names, e.g. 'qdrant' exposes tools as qdrant.search / qdrant.upsert / qdrant.delete. Change this when running multiple Qdrant nodes in the same pipeline so their tool names do not collide.",
-                      "minLength": 1,
-                      "title": "Tool Server Name",
-                      "type": "string"
                     }
                   },
                   "required": [
@@ -79,8 +71,7 @@
                     "port",
                     "apikey",
                     "score",
-                    "collection",
-                    "serverName"
+                    "collection"
                   ],
                   "type": "object"
                 },
@@ -131,21 +122,13 @@
                       "minimum": 0,
                       "title": "Retrieval Score",
                       "type": "number"
-                    },
-                    "serverName": {
-                      "default": "qdrant",
-                      "description": "Namespace for agent-facing tool names, e.g. 'qdrant' exposes tools as qdrant.search / qdrant.upsert / qdrant.delete. Change this when running multiple Qdrant nodes in the same pipeline so their tool names do not collide.",
-                      "minLength": 1,
-                      "title": "Tool Server Name",
-                      "type": "string"
                     }
                   },
                   "required": [
                     "host",
                     "port",
                     "score",
-                    "collection",
-                    "serverName"
+                    "collection"
                   ],
                   "type": "object"
                 },
@@ -197,7 +180,6 @@
             "Almost identical"
           ]
         },
-        "serverName": {},
         "ui:options": {
           "label": false,
           "nonNestedDisplay": true
@@ -207,8 +189,7 @@
           "port",
           "apikey",
           "score",
-          "collection",
-          "serverName"
+          "collection"
         ]
       },
       "local": {
@@ -226,7 +207,6 @@
             "Almost identical"
           ]
         },
-        "serverName": {},
         "ui:options": {
           "label": false,
           "nonNestedDisplay": true
@@ -235,8 +215,7 @@
           "host",
           "port",
           "score",
-          "collection",
-          "serverName"
+          "collection"
         ]
       },
       "profile": {
@@ -840,13 +819,6 @@
                                       "minimum": 0,
                                       "title": "Retrieval Score",
                                       "type": "number"
-                                    },
-                                    "serverName": {
-                                      "default": "qdrant",
-                                      "description": "Namespace for agent-facing tool names, e.g. 'qdrant' exposes tools as qdrant.search / qdrant.upsert / qdrant.delete. Change this when running multiple Qdrant nodes in the same pipeline so their tool names do not collide.",
-                                      "minLength": 1,
-                                      "title": "Tool Server Name",
-                                      "type": "string"
                                     }
                                   },
                                   "required": [
@@ -854,8 +826,7 @@
                                     "port",
                                     "apikey",
                                     "score",
-                                    "collection",
-                                    "serverName"
+                                    "collection"
                                   ],
                                   "type": "object"
                                 },
@@ -906,21 +877,13 @@
                                       "minimum": 0,
                                       "title": "Retrieval Score",
                                       "type": "number"
-                                    },
-                                    "serverName": {
-                                      "default": "qdrant",
-                                      "description": "Namespace for agent-facing tool names, e.g. 'qdrant' exposes tools as qdrant.search / qdrant.upsert / qdrant.delete. Change this when running multiple Qdrant nodes in the same pipeline so their tool names do not collide.",
-                                      "minLength": 1,
-                                      "title": "Tool Server Name",
-                                      "type": "string"
                                     }
                                   },
                                   "required": [
                                     "host",
                                     "port",
                                     "score",
-                                    "collection",
-                                    "serverName"
+                                    "collection"
                                   ],
                                   "type": "object"
                                 },
@@ -1260,7 +1223,6 @@
                     "Almost identical"
                   ]
                 },
-                "serverName": {},
                 "ui:options": {
                   "label": false,
                   "nonNestedDisplay": true
@@ -1270,8 +1232,7 @@
                   "port",
                   "apikey",
                   "score",
-                  "collection",
-                  "serverName"
+                  "collection"
                 ]
               },
               "local": {
@@ -1289,7 +1250,6 @@
                     "Almost identical"
                   ]
                 },
-                "serverName": {},
                 "ui:options": {
                   "label": false,
                   "nonNestedDisplay": true
@@ -1298,8 +1258,7 @@
                   "host",
                   "port",
                   "score",
-                  "collection",
-                  "serverName"
+                  "collection"
                 ]
               },
               "profile": {

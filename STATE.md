@@ -13,7 +13,7 @@ A **1-minute live booth demo** for **RocketRide Launch Night** (Shack15, SF, eve
 **Decisions made:**
 - Going with **Polyglot Cup** (it was the operator's featured pick; the debate's judge ranked it joint-last on feasibility, see the debate log for the honest critique, but Charlie chose it).
 - **Build the dropper variant FIRST** (zero client code, most reliable). Add the fancier custom SSE grid later only if there's time.
-- Runs on **RocketRide Cloud** (`api.rocketride.ai`), not local.
+- **Connection mode: LOCAL** (switched 2026-06-18). Now runs against the IDE-managed local engine, not cloud. See "Connection mode: LOCAL" under Status. The same `.pipe` runs on either; only the endpoint differs.
 
 ---
 
@@ -28,7 +28,16 @@ A **1-minute live booth demo** for **RocketRide Launch Night** (Shack15, SF, eve
 1. `audio_transcribe` profile key is **`model`** (e.g. `"model": "base"`), NOT `mode`. Verified against every working pipe in the testing ground.
 2. `prompt`'s `text` input produces nothing (catalog lane `text: []`); it only emits `questions` from a `questions` input. So the transcript (`text`) goes through a **`question` node** (`text → questions`) first, then `prompt` injects the translate-and-tag instruction. (The PLAN doc still shows the old, wrong skeleton; patching it is an open TODO.)
 
-### Pending to go LIVE (blockers on Charlie)
+### Connection mode: LOCAL (switched 2026-06-18) — CURRENT
+Now targeting the **IDE-managed local engine**, not cloud.
+- The RocketRide IDE (local mode) runs the engine at `~/Library/Application Support/RocketRide/engine` (server-v3.2.2). It binds an **ephemeral port** (`--port=0`, was 58202) that changes per restart, so discover it live.
+- **Python SDK works locally:** `rocketride 1.2.0` installed in `.venv/`. `tools/connection_check.py` auto-discovers the engine port and connects with NO cloud token. Verified: `connected=True authenticated=True → RESULT: OK`.
+- **Local catalog:** `.rocketride/services-catalog.json` refreshed to the local engine (102 nodes); all 7 pipe nodes present; both pipes validate 2/2 (static).
+- **Booth path (recommended): run the pipe in the RocketRide IDE** (dropper opens in the browser). The IDE manages the ephemeral-port engine; this is the zero-client-code variant and already runs locally.
+- **OpenAI key:** `llm_openai` uses `${ROCKETRIDE_OPENAI_KEY}` (set in gitignored `.env`). In IDE/local mode, make sure the engine actually receives it (extension env sync / project `.env`). NEVER paste the literal key into the canvas: it gets written into the `.pipe` and committed (happened once, see git `5b8c1fc`; reverted in `1efb7b5`).
+- **Known SDK skew:** SDK 1.2.0 vs engine 3.2.2 — the SDK's `validate()` / `get_services()` response shapes don't fully line up (engine `validate()` returns a spurious `ccode 40`). Treat the static validators (`tools/validate_pipes.py`, skill `--static`) plus the live IDE run as authoritative; pin the SDK to the engine version if you need SDK `validate()` or scripted `send_files()` runs.
+
+### Pending to go LIVE — CLOUD path (SUPERSEDED by LOCAL mode above; kept for reference)
 1. Generate a cloud API key: cloud.rocketride.ai → API Keys → Create.
 2. Fill `.env` (already exists, copied from `.env.example`):
    - `ROCKETRIDE_APIKEY=<cloud key>`

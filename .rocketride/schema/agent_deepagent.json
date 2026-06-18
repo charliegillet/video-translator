@@ -61,7 +61,7 @@
                     },
                     "agent_description": {
                       "default": "",
-                      "description": "What does this agent do? Describe its purpose and capabilities, this helps parent agents select and invoke it correctly.",
+                      "description": "What does this agent do? Describe its purpose and capabilities — this helps parent agents select and invoke it correctly.",
                       "title": "Agent description",
                       "type": "string"
                     },

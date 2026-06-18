@@ -144,29 +144,6 @@
     }
   },
   {
-    "name": "agent_llamaindex",
-    "classType": [
-      "agent",
-      "tool"
-    ],
-    "description": "Single-agent execution using LlamaIndex's ReAct loop.",
-    "lanes": {
-      "questions": [
-        "answers"
-      ]
-    },
-    "invoke": {
-      "llm": {
-        "description": "LLM used by the agent",
-        "min": 1
-      },
-      "tool": {
-        "description": "Tools available to the agent (via control-plane invoke)",
-        "min": 0
-      }
-    }
-  },
-  {
     "name": "agent_rocketride",
     "classType": [
       "agent",
@@ -196,21 +173,6 @@
     }
   },
   {
-    "name": "anomaly_detector",
-    "classType": [
-      "text"
-    ],
-    "description": "A pipeline monitoring component that detects anomalies in numeric output values using \nstatistical methods.",
-    "lanes": {
-      "documents": [
-        "documents"
-      ],
-      "text": [
-        "text"
-      ]
-    }
-  },
-  {
     "name": "anonymize_text",
     "classType": [
       "text"
@@ -220,21 +182,6 @@
       "text": [
         "text"
       ]
-    }
-  },
-  {
-    "name": "aparavi_aql",
-    "classType": [
-      "database",
-      "tool"
-    ],
-    "description": "Queries the Aparavi data governance platform using AQL (Aparavi Query Language).",
-    "lanes": {},
-    "invoke": {
-      "llm": {
-        "description": "LLM used to generate AQL queries from natural language",
-        "min": 1
-      }
     }
   },
   {
@@ -300,19 +247,6 @@
     }
   },
   {
-    "name": "background_removal",
-    "classType": [
-      "image"
-    ],
-    "description": "Foreground / background separation using BiRefNet (MIT).",
-    "lanes": {
-      "image": [
-        "text",
-        "image"
-      ]
-    }
-  },
-  {
     "name": "chat",
     "classType": [
       "source"
@@ -327,8 +261,7 @@
   {
     "name": "chroma",
     "classType": [
-      "store",
-      "tool"
+      "store"
     ],
     "description": "A vector database component for Chroma, enabling efficient storage and \nretrieval of vector embeddings.",
     "lanes": {
@@ -446,45 +379,6 @@
         "description": "LLM to use to craft SQL queries from question",
         "min": 1
       }
-    }
-  },
-  {
-    "name": "depth_estimate",
-    "classType": [
-      "image"
-    ],
-    "description": "Monocular depth estimation using Depth Anything V2 Small (Apache-2.",
-    "lanes": {
-      "image": [
-        "text",
-        "image"
-      ]
-    }
-  },
-  {
-    "name": "detect",
-    "classType": [
-      "image"
-    ],
-    "description": "Per-frame object detection.",
-    "lanes": {
-      "image": [
-        "text",
-        "image"
-      ]
-    }
-  },
-  {
-    "name": "detect_segment",
-    "classType": [
-      "image"
-    ],
-    "description": "Pixel-level segmentation with HuggingFace-native engines: \nMask2Former-instance (MIT, default) for closed-set instance masks; \nMask2Former-semantic (MIT) for per-pixel class maps.",
-    "lanes": {
-      "image": [
-        "text",
-        "image"
-      ]
     }
   },
   {
@@ -743,32 +637,6 @@
     }
   },
   {
-    "name": "landing_ai_extract",
-    "classType": [
-      "data"
-    ],
-    "description": "Extracts structured fields from parsed Markdown using Landing.",
-    "lanes": {
-      "text": [
-        "answers",
-        "documents"
-      ]
-    }
-  },
-  {
-    "name": "landing_ai_parse",
-    "classType": [
-      "data"
-    ],
-    "description": "Parses documents with Landing.",
-    "lanes": {
-      "tags": [
-        "text",
-        "table"
-      ]
-    }
-  },
-  {
     "name": "llamaparse",
     "classType": [
       "data"
@@ -787,18 +655,6 @@
       "llm"
     ],
     "description": "A component that integrates with Anthropic's Claude models for natural \nlanguage understanding and generation.",
-    "lanes": {
-      "questions": [
-        "answers"
-      ]
-    }
-  },
-  {
-    "name": "llm_baidu_qianfan",
-    "classType": [
-      "llm"
-    ],
-    "description": "A component that connects to Baidu Qianfan ERNIE large language models through \nQianfan's OpenAI-compatible chat-completions API.",
     "lanes": {
       "questions": [
         "answers"
@@ -847,18 +703,6 @@
       "llm"
     ],
     "description": "A component that connects to GMI Cloud's large language models for advanced \nnatural language processing.",
-    "lanes": {
-      "questions": [
-        "answers"
-      ]
-    }
-  },
-  {
-    "name": "llm_kimi",
-    "classType": [
-      "llm"
-    ],
-    "description": "A component that connects to Moonshot AI's Kimi large language models for \nadvanced natural language processing.",
     "lanes": {
       "questions": [
         "answers"
@@ -1110,8 +954,7 @@
   {
     "name": "pinecone",
     "classType": [
-      "store",
-      "tool"
+      "store"
     ],
     "description": "A component that connects to the Pinecone vector database for storing and retrieving \nhigh-dimensional embeddings.",
     "lanes": {
@@ -1120,19 +963,6 @@
         "documents",
         "answers",
         "questions"
-      ]
-    }
-  },
-  {
-    "name": "pose_estimation",
-    "classType": [
-      "image"
-    ],
-    "description": "Top-down human pose estimation using RTMPose (Apache-2.",
-    "lanes": {
-      "image": [
-        "text",
-        "image"
       ]
     }
   },
@@ -1217,8 +1047,7 @@
   {
     "name": "qdrant",
     "classType": [
-      "store",
-      "tool"
+      "store"
     ],
     "description": "A vector database component for Qdrant, enabling efficient storage and \nretrieval of vector embeddings.",
     "lanes": {
@@ -1431,14 +1260,6 @@
     }
   },
   {
-    "name": "tool_apify",
-    "classType": [
-      "tool"
-    ],
-    "description": "Exposes Apify Actors as agent tools.",
-    "lanes": {}
-  },
-  {
     "name": "tool_bland_ai",
     "classType": [
       "tool"
@@ -1469,35 +1290,11 @@
     }
   },
   {
-    "name": "tool_daytona",
-    "classType": [
-      "tool"
-    ],
-    "description": "Gives agents an isolated Daytona cloud sandbox for running code and shell commands.",
-    "lanes": {}
-  },
-  {
-    "name": "tool_deepl",
-    "classType": [
-      "tool"
-    ],
-    "description": "Exposes DeepL translation and AI rephrasing as agent tools.",
-    "lanes": {}
-  },
-  {
     "name": "tool_exa_search",
     "classType": [
       "tool"
     ],
     "description": "Exposes Exa semantic web search as an agent tool.",
-    "lanes": {}
-  },
-  {
-    "name": "tool_falkordb",
-    "classType": [
-      "tool"
-    ],
-    "description": "Lets agents query a FalkorDB graph database with Cypher.",
     "lanes": {}
   },
   {
@@ -1537,15 +1334,7 @@
     "classType": [
       "tool"
     ],
-    "description": "Makes HTTP requests to any API endpoint, like curl for agents.",
-    "lanes": {}
-  },
-  {
-    "name": "tool_mem0",
-    "classType": [
-      "tool"
-    ],
-    "description": "Long-term, shared agent memory exposed as tools, backed by the hosted Mem0 Platform.",
+    "description": "Makes HTTP requests to any API endpoint — like curl for agents.",
     "lanes": {}
   },
   {
@@ -1581,14 +1370,6 @@
     "lanes": {}
   },
   {
-    "name": "tool_v0",
-    "classType": [
-      "tool"
-    ],
-    "description": "A component that connects to Vercel's v0 API to generate React + Tailwind CSS UI \ncomponents from natural-language prompts.",
-    "lanes": {}
-  },
-  {
     "name": "tool_xtrace_memory",
     "classType": [
       "tool"
@@ -1605,18 +1386,6 @@
     "lanes": {
       "video": [
         "text"
-      ]
-    }
-  },
-  {
-    "name": "video_composer",
-    "classType": [
-      "video"
-    ],
-    "description": "Stitches a sequence of image frames into an MP4 video using FFmpeg.",
-    "lanes": {
-      "image": [
-        "video"
       ]
     }
   },

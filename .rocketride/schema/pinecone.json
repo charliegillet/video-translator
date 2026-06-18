@@ -1,9 +1,8 @@
 {
   "actions": 0,
-  "capabilities": 3072,
+  "capabilities": 2048,
   "classType": [
-    "store",
-    "tool"
+    "store"
   ],
   "description": "A component that connects to the Pinecone vector database for storing and retrieving \nhigh-dimensional embeddings. It enables efficient similarity search, indexing, and \nmanagement of vectorized data, such as text or image embeddings. Configurable with \nAPI credentials, index settings, and metadata filtering, the component supports fast \nand scalable operations across large embedding datasets. Ideal for semantic search, \nrecommendation systems, and retrieval-augmented generation workflows.",
   "documentation": "https://docs.rocketride.org",
@@ -53,20 +52,12 @@
                       "minimum": 0,
                       "title": "Retrieval Score",
                       "type": "number"
-                    },
-                    "serverName": {
-                      "default": "pinecone",
-                      "description": "Namespace for agent-facing tool names, e.g. 'pinecone' exposes tools as pinecone.search / pinecone.upsert / pinecone.delete. Change this when running multiple Pinecone nodes in the same pipeline so their tool names do not collide.",
-                      "minLength": 1,
-                      "title": "Tool Server Name",
-                      "type": "string"
                     }
                   },
                   "required": [
                     "apikey",
                     "score",
-                    "collection",
-                    "serverName"
+                    "collection"
                   ],
                   "type": "object"
                 },
@@ -114,20 +105,12 @@
                       "minimum": 0,
                       "title": "Retrieval Score",
                       "type": "number"
-                    },
-                    "serverName": {
-                      "default": "pinecone",
-                      "description": "Namespace for agent-facing tool names, e.g. 'pinecone' exposes tools as pinecone.search / pinecone.upsert / pinecone.delete. Change this when running multiple Pinecone nodes in the same pipeline so their tool names do not collide.",
-                      "minLength": 1,
-                      "title": "Tool Server Name",
-                      "type": "string"
                     }
                   },
                   "required": [
                     "apikey",
                     "score",
-                    "collection",
-                    "serverName"
+                    "collection"
                   ],
                   "type": "object"
                 }
@@ -172,7 +155,6 @@
             "Almost identical"
           ]
         },
-        "serverName": {},
         "ui:options": {
           "label": false,
           "nonNestedDisplay": true
@@ -180,8 +162,7 @@
         "ui:order": [
           "apikey",
           "score",
-          "collection",
-          "serverName"
+          "collection"
         ]
       },
       "profile": {
@@ -207,7 +188,6 @@
             "Almost identical"
           ]
         },
-        "serverName": {},
         "ui:options": {
           "label": false,
           "nonNestedDisplay": true
@@ -215,8 +195,7 @@
         "ui:order": [
           "apikey",
           "score",
-          "collection",
-          "serverName"
+          "collection"
         ]
       },
       "ui:order": [
@@ -797,20 +776,12 @@
                                       "minimum": 0,
                                       "title": "Retrieval Score",
                                       "type": "number"
-                                    },
-                                    "serverName": {
-                                      "default": "pinecone",
-                                      "description": "Namespace for agent-facing tool names, e.g. 'pinecone' exposes tools as pinecone.search / pinecone.upsert / pinecone.delete. Change this when running multiple Pinecone nodes in the same pipeline so their tool names do not collide.",
-                                      "minLength": 1,
-                                      "title": "Tool Server Name",
-                                      "type": "string"
                                     }
                                   },
                                   "required": [
                                     "apikey",
                                     "score",
-                                    "collection",
-                                    "serverName"
+                                    "collection"
                                   ],
                                   "type": "object"
                                 },
@@ -858,20 +829,12 @@
                                       "minimum": 0,
                                       "title": "Retrieval Score",
                                       "type": "number"
-                                    },
-                                    "serverName": {
-                                      "default": "pinecone",
-                                      "description": "Namespace for agent-facing tool names, e.g. 'pinecone' exposes tools as pinecone.search / pinecone.upsert / pinecone.delete. Change this when running multiple Pinecone nodes in the same pipeline so their tool names do not collide.",
-                                      "minLength": 1,
-                                      "title": "Tool Server Name",
-                                      "type": "string"
                                     }
                                   },
                                   "required": [
                                     "apikey",
                                     "score",
-                                    "collection",
-                                    "serverName"
+                                    "collection"
                                   ],
                                   "type": "object"
                                 }
@@ -1203,7 +1166,6 @@
                     "Almost identical"
                   ]
                 },
-                "serverName": {},
                 "ui:options": {
                   "label": false,
                   "nonNestedDisplay": true
@@ -1211,8 +1173,7 @@
                 "ui:order": [
                   "apikey",
                   "score",
-                  "collection",
-                  "serverName"
+                  "collection"
                 ]
               },
               "profile": {
@@ -1238,7 +1199,6 @@
                     "Almost identical"
                   ]
                 },
-                "serverName": {},
                 "ui:options": {
                   "label": false,
                   "nonNestedDisplay": true
@@ -1246,8 +1206,7 @@
                 "ui:order": [
                   "apikey",
                   "score",
-                  "collection",
-                  "serverName"
+                  "collection"
                 ]
               },
               "ui:options": {

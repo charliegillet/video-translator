@@ -48,7 +48,7 @@
                     },
                     "db_description": {
                       "default": "",
-                      "description": "What is this database used for? Describe its content and purpose, this helps the LLM generate more accurate queries.",
+                      "description": "What is this database used for? Describe its content and purpose — this helps the LLM generate more accurate queries.",
                       "title": "Database description",
                       "type": "string"
                     },
@@ -78,7 +78,7 @@
                     },
                     "user": {
                       "default": "postgres",
-                      "description": "Database user. For the pooler (recommended) it MUST include your project ref: postgres.<project-ref>, without the .<project-ref> suffix the pooler returns 'no tenant identifier'. For the direct connection it is just: postgres",
+                      "description": "Database user. For the pooler (recommended) it MUST include your project ref: postgres.<project-ref> — without the .<project-ref> suffix the pooler returns 'no tenant identifier'. For the direct connection it is just: postgres",
                       "title": "User",
                       "type": "string"
                     }

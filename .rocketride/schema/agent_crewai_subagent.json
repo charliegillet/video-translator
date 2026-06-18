@@ -4,7 +4,7 @@
   "classType": [
     "crewai"
   ],
-  "description": "Managed CrewAI sub-agent. Must be wired into a CrewAI Manager via the crewai channel.\nCannot be invoked directly, has no questions lane.",
+  "description": "Managed CrewAI sub-agent. Must be wired into a CrewAI Manager via the crewai channel.\nCannot be invoked directly — has no questions lane.",
   "documentation": "https://docs.rocketride.org",
   "icon": "crewai.svg",
   "invoke": {

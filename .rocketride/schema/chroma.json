@@ -1,9 +1,8 @@
 {
   "actions": 0,
-  "capabilities": 3072,
+  "capabilities": 2048,
   "classType": [
-    "store",
-    "tool"
+    "store"
   ],
   "description": "A vector database component for Chroma, enabling efficient storage and \nretrieval of vector embeddings. It supports similarity search, filtering, \nand management of vector data with high performance.",
   "documentation": "https://docs.rocketride.org",
@@ -48,21 +47,13 @@
                       "minimum": 0,
                       "title": "Port",
                       "type": "number"
-                    },
-                    "serverName": {
-                      "default": "chroma",
-                      "description": "Namespace for agent-facing tool names, e.g. 'chroma' exposes tools as chroma.search / chroma.upsert / chroma.delete. Change this when running multiple Chroma nodes in the same pipeline so their tool names do not collide.",
-                      "minLength": 1,
-                      "title": "Tool Server Name",
-                      "type": "string"
                     }
                   },
                   "required": [
                     "host",
                     "port",
                     "apikey",
-                    "collection",
-                    "serverName"
+                    "collection"
                   ],
                   "type": "object"
                 },
@@ -96,20 +87,12 @@
                       "minimum": 0,
                       "title": "Port",
                       "type": "number"
-                    },
-                    "serverName": {
-                      "default": "chroma",
-                      "description": "Namespace for agent-facing tool names, e.g. 'chroma' exposes tools as chroma.search / chroma.upsert / chroma.delete. Change this when running multiple Chroma nodes in the same pipeline so their tool names do not collide.",
-                      "minLength": 1,
-                      "title": "Tool Server Name",
-                      "type": "string"
                     }
                   },
                   "required": [
                     "host",
                     "port",
-                    "collection",
-                    "serverName"
+                    "collection"
                   ],
                   "type": "object"
                 },
@@ -150,7 +133,6 @@
         "collection": {},
         "host": {},
         "port": {},
-        "serverName": {},
         "ui:options": {
           "label": false,
           "nonNestedDisplay": true
@@ -159,15 +141,13 @@
           "host",
           "port",
           "apikey",
-          "collection",
-          "serverName"
+          "collection"
         ]
       },
       "local": {
         "collection": {},
         "host": {},
         "port": {},
-        "serverName": {},
         "ui:options": {
           "label": false,
           "nonNestedDisplay": true
@@ -175,8 +155,7 @@
         "ui:order": [
           "host",
           "port",
-          "collection",
-          "serverName"
+          "collection"
         ]
       },
       "profile": {
@@ -758,21 +737,13 @@
                                       "minimum": 0,
                                       "title": "Port",
                                       "type": "number"
-                                    },
-                                    "serverName": {
-                                      "default": "chroma",
-                                      "description": "Namespace for agent-facing tool names, e.g. 'chroma' exposes tools as chroma.search / chroma.upsert / chroma.delete. Change this when running multiple Chroma nodes in the same pipeline so their tool names do not collide.",
-                                      "minLength": 1,
-                                      "title": "Tool Server Name",
-                                      "type": "string"
                                     }
                                   },
                                   "required": [
                                     "host",
                                     "port",
                                     "apikey",
-                                    "collection",
-                                    "serverName"
+                                    "collection"
                                   ],
                                   "type": "object"
                                 },
@@ -806,20 +777,12 @@
                                       "minimum": 0,
                                       "title": "Port",
                                       "type": "number"
-                                    },
-                                    "serverName": {
-                                      "default": "chroma",
-                                      "description": "Namespace for agent-facing tool names, e.g. 'chroma' exposes tools as chroma.search / chroma.upsert / chroma.delete. Change this when running multiple Chroma nodes in the same pipeline so their tool names do not collide.",
-                                      "minLength": 1,
-                                      "title": "Tool Server Name",
-                                      "type": "string"
                                     }
                                   },
                                   "required": [
                                     "host",
                                     "port",
-                                    "collection",
-                                    "serverName"
+                                    "collection"
                                   ],
                                   "type": "object"
                                 },
@@ -1146,7 +1109,6 @@
                 "collection": {},
                 "host": {},
                 "port": {},
-                "serverName": {},
                 "ui:options": {
                   "label": false,
                   "nonNestedDisplay": true
@@ -1155,15 +1117,13 @@
                   "host",
                   "port",
                   "apikey",
-                  "collection",
-                  "serverName"
+                  "collection"
                 ]
               },
               "local": {
                 "collection": {},
                 "host": {},
                 "port": {},
-                "serverName": {},
                 "ui:options": {
                   "label": false,
                   "nonNestedDisplay": true
@@ -1171,8 +1131,7 @@
                 "ui:order": [
                   "host",
                   "port",
-                  "collection",
-                  "serverName"
+                  "collection"
                 ]
               },
               "profile": {

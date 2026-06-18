@@ -4,7 +4,7 @@
   "classType": [
     "image"
   ],
-  "description": "A component that extracts machine-readable text from images and scanned documents \nusing optical character recognition. It enables the transformation of visual content (such \nas PDFs, screenshots, and photos) into structured text for further analysis and processing. \nSupporting various image formats and multilingual text, the component is ideal for digitizing \nprinted materials, enabling search, indexing, and downstream natural language tasks.",
+  "description": "A component that extracts machine-readable text from images and scanned documents \nusing optical character recognition. It enables the transformation of visual content—such \nas PDFs, screenshots, and photos—into structured text for further analysis and processing. \nSupporting various image formats and multilingual text, the component is ideal for digitizing \nprinted materials, enabling search, indexing, and downstream natural language tasks.",
   "documentation": "https://docs.rocketride.org",
   "icon": "ocr.svg",
   "lanes": {

@@ -94,7 +94,7 @@
                     },
                     "db_description": {
                       "default": "",
-                      "description": "What is this graph used for? Describe its content and domain, this helps the LLM generate more accurate Cypher queries.",
+                      "description": "What is this graph used for? Describe its content and domain — this helps the LLM generate more accurate Cypher queries.",
                       "title": "Graph description",
                       "type": "string"
                     },

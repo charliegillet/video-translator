@@ -42,7 +42,7 @@
         "type",
         "mode"
       ],
-      "title": "Webhook",
+      "title": "Web Hook",
       "type": "object"
     },
     "ui": {
@@ -82,5 +82,5 @@
   "prefix": "WebHook",
   "protocol": "webhook://",
   "tile": [],
-  "title": "Webhook"
+  "title": "Web Hook"
 }

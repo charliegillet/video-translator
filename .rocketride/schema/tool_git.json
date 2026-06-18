@@ -97,15 +97,15 @@
       },
       "readOnlyMode": {
         "ui:enumNames": [
-          "Yes: block all writes",
-          "No: allow writes (subject to Safe Mode)"
+          "Yes — block all writes",
+          "No — allow writes (subject to Safe Mode)"
         ]
       },
       "repoPath": {},
       "safeMode": {
         "ui:enumNames": [
-          "Yes: block destructive ops",
-          "No: allow all operations"
+          "Yes — block destructive ops",
+          "No — allow all operations"
         ]
       },
       "sshKey": {

@@ -230,9 +230,9 @@
       "basic": {
         "policy_mode": {
           "ui:enumNames": [
-            "Block: Reject on violation",
-            "Warn: Log and continue",
-            "Log: Silent logging only"
+            "Block — Reject on violation",
+            "Warn — Log and continue",
+            "Log — Silent logging only"
           ]
         },
         "ui:options": {
@@ -252,7 +252,7 @@
         "enable_prompt_injection": {},
         "expected_format": {
           "ui:enumNames": [
-            "None: No format check",
+            "None — No format check",
             "JSON",
             "Markdown",
             "Bullet list",
@@ -263,9 +263,9 @@
         "max_tokens_estimate": {},
         "policy_mode": {
           "ui:enumNames": [
-            "Block: Reject on violation",
-            "Warn: Log and continue",
-            "Log: Silent logging only"
+            "Block — Reject on violation",
+            "Warn — Log and continue",
+            "Log — Silent logging only"
           ]
         },
         "ui:options": {
@@ -287,15 +287,15 @@
       },
       "profile": {
         "ui:enumNames": [
-          "Basic: Prompt injection + PII detection",
-          "Custom: Configure checks individually",
-          "Strict: All checks enabled, block on violation"
+          "Basic — Prompt injection + PII detection",
+          "Custom — Configure checks individually",
+          "Strict — All checks enabled, block on violation"
         ]
       },
       "strict": {
         "expected_format": {
           "ui:enumNames": [
-            "None: No format check",
+            "None — No format check",
             "JSON",
             "Markdown",
             "Bullet list",
@@ -305,9 +305,9 @@
         "max_tokens_estimate": {},
         "policy_mode": {
           "ui:enumNames": [
-            "Block: Reject on violation",
-            "Warn: Log and continue",
-            "Log: Silent logging only"
+            "Block — Reject on violation",
+            "Warn — Log and continue",
+            "Log — Silent logging only"
           ]
         },
         "ui:options": {

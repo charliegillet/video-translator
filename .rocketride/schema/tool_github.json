@@ -50,8 +50,8 @@
       "defaultRepo": {},
       "readOnly": {
         "ui:enumNames": [
-          "Yes: read only",
-          "No: allow writes"
+          "Yes — read only",
+          "No — allow writes"
         ]
       },
       "token": {
