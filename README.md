@@ -5,18 +5,18 @@ A RocketRide pipeline that takes a short video or audio clip in any language, tr
 ## Pipeline
 
 ```
-dropper -> parse -> audio_transcribe -> question -> prompt -> llm_anthropic -> response_answers
+dropper -> parse -> audio_transcribe -> question -> prompt -> llm_openai -> response_answers
 ```
 
 - `pipelines/video-translator.pipe` is the single pipeline.
 - `audio_transcribe` (Whisper) auto-detects the spoken language: the `language` field is left unset.
-- The LLM (Claude, via `llm_anthropic`) names the source language, translates the transcript to English, and tags the key moment. It is instructed to abstain (language "unclear", empty moment) rather than guess when the audio is too unclear to read.
+- The LLM (GPT, via `llm_openai`) names the source language, translates the transcript to English, and tags the key moment. It is instructed to abstain (language "unclear", empty moment) rather than guess when the audio is too unclear to read.
 
 ## Run
 
 ```bash
 python3 tools/validate_pipes.py .     # expect: VALID: 1/1
-cp .env.example .env                   # fill in ROCKETRIDE_ANTHROPIC_KEY
+cp .env.example .env                   # fill in ROCKETRIDE_OPENAI_KEY
 ```
 
 Then run the pipeline in the RocketRide IDE (local engine): open `pipelines/video-translator.pipe`, open the dropper URL from the Project Log, and drop a video or audio file in. `tools/connection_check.py` confirms the local engine is reachable.

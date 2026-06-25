@@ -135,12 +135,12 @@
       }
     },
     {
-      "id": "llm_anthropic_1",
-      "provider": "llm_anthropic",
+      "id": "llm_openai_1",
+      "provider": "llm_openai",
       "config": {
-        "profile": "claude-sonnet-4-6",
-        "claude-sonnet-4-6": {
-          "apikey": "${ROCKETRIDE_ANTHROPIC_KEY}"
+        "profile": "openai-5-2",
+        "openai-5-2": {
+          "apikey": "${ROCKETRIDE_OPENAI_KEY}"
         },
         "parameters": {}
       },
@@ -172,7 +172,7 @@
       "input": [
         {
           "lane": "answers",
-          "from": "llm_anthropic_1"
+          "from": "llm_openai_1"
         }
       ],
       "ui": {
@@ -190,9 +190,9 @@
     }
   ],
   "name": "Video Translator",
-  "description": "dropper -> parse -> audio_transcribe -> question -> prompt -> llm_anthropic -> response_answers. Detects the language of any short video or audio clip, transcribes it (Whisper auto-detects the language, no per-language configuration), then uses an LLM to translate it to English and tag the key moment.",
+  "description": "dropper -> parse -> audio_transcribe -> question -> prompt -> llm_openai -> response_answers. Detects the language of any short video or audio clip, transcribes it (Whisper auto-detects the language, no per-language configuration), then uses an LLM to translate it to English and tag the key moment.",
   "source": "dropper_1",
-  "project_id": "eb388d21-744a-4652-99e6-0380d5ee9198",
+  "project_id": "c9756e04-b18a-4430-8c68-eff3fbff67f9",
   "viewport": {
     "x": 0,
     "y": 0,
