@@ -37,4 +37,4 @@ The longer-term goal is a fuller video translator that returns the same video in
 
 - Bring your own media: clips are dropped in locally. There is no URL or YouTube ingest node.
 - Never hardcode keys in a `.pipe`; use `${ROCKETRIDE_*}` references only. `.env` is gitignored.
-- `archive/` holds the original launch-night demo (the per-language pipes and booth scripts) for reference.
+- `archive/` holds the original per-language demo pipes and scripts for reference.
