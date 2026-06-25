@@ -2,7 +2,7 @@
 
 Project instructions for Claude Code working in this repo.
 
-**Polyglot Cup** is a one-minute live booth demo for RocketRide Cloud Launch Night: one cloud pipeline parallel-transcribes ~30 short World Cup fan clips in their native languages, then an LLM translates each to English and tags the key moment. See `README.md` for the concept and `STATE.md` for current status. RocketRide pipeline guidance lives in `.rocketride/docs/` (read it before editing any `.pipe`).
+**Video Translator** is a RocketRide pipeline that transcribes a short video or audio clip in any language (Whisper, with automatic language detection), then uses an LLM to translate it to English and tag the key moment. One pipeline (`pipelines/video-translator.pipe`) handles every language. See `README.md` for the overview. RocketRide pipeline guidance lives in `.rocketride/docs/` (read it before editing any `.pipe`).
 
 ## Git: auto-commit and push everything
 
