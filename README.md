@@ -1,39 +1,40 @@
-# Polyglot Cup
+# Video Translator
 
-A one-minute live booth demo for **RocketRide Cloud Launch Night**. One cloud pipeline transcribes ~30 short World Cup fan clips in their native languages (Whisper), then an LLM translates each to English and tags the funniest moment. Closer: swap `llm_anthropic` to `llm_openai` in one line, live.
+A RocketRide pipeline that takes a short video or audio clip in any language, transcribes it with Whisper (automatic language detection), then uses an LLM to translate it to English and tag the key moment. One pipeline handles every language; there is no per-language configuration.
 
 ## Pipeline
 
 ```
-dropper -> parse -> audio_transcribe -> question -> prompt -> llm -> response_answers
+dropper -> parse -> audio_transcribe -> question -> prompt -> llm_anthropic -> response_answers
 ```
 
-- `pipelines/polyglot.pipe` — Anthropic (default)
-- `pipelines/polyglot-openai.pipe` — OpenAI variant, for the live model swap
+- `pipelines/video-translator.pipe` is the single pipeline.
+- `audio_transcribe` (Whisper) auto-detects the spoken language: the `language` field is left unset.
+- The LLM (Claude, via `llm_anthropic`) names the source language, translates the transcript to English, and tags the key moment. It is instructed to abstain (language "unclear", empty moment) rather than guess when the audio is too unclear to read.
 
 ## Run
 
 ```bash
-python3 tools/validate_pipes.py .   # expect: VALID: 2/2
-cp .env.example .env                 # fill ROCKETRIDE_APIKEY + LLM keys
-pip3 install rocketride
-tools/fetch_clips.sh                 # download fan clips into clips/<lang>/
+python3 tools/validate_pipes.py .     # expect: VALID: 1/1
+cp .env.example .env                   # fill in ROCKETRIDE_ANTHROPIC_KEY
 ```
 
-Start the pipeline once (`client.use(filepath='pipelines/polyglot.pipe', ttl=0, use_existing=True)`), open the dropper URL from the Project Log, drag the clips in.
+Then run the pipeline in the RocketRide IDE (local engine): open `pipelines/video-translator.pipe`, open the dropper URL from the Project Log, and drop a video or audio file in. `tools/connection_check.py` confirms the local engine is reachable.
 
-## Files
+## Output
 
-- `PLAN-polyglot-cup.md` — full build plan
-- `STATE.md` — current status / handoff
-- `rocketride-launch-demo-debate-log.md` — design debate
-- `CLAUDE.md` — repo automation policy
-- `.rocketride/` — cloud node catalog + engine docs
+Three lines per clip:
+
+1. Source language (named in English)
+2. English translation of the transcript
+3. Key moment (one short line)
+
+## Roadmap
+
+The longer-term goal is a fuller video translator that returns the same video in two forms: a dubbed version (English audio in a voice similar to the original speaker) and a subbed version (the original audio with burned-in English captions). RocketRide does not yet have the nodes this needs (transcript timestamps, SRT/VTT generation, subtitle burn-in, audio muxing, and voice-cloning TTS), so it is planned as a set of new processor nodes, prototyped outside RocketRide first and ported in once the quality is validated.
 
 ## Notes
 
-- No YouTube/URL ingest: clips must be pre-downloaded.
-- Set `language` per clip bucket (no auto-detect; unset = English).
-- "Parallel" = fan-out through one shared warm Whisper model, not 30 GPUs.
-- Never hardcode keys in a `.pipe`; use `${ROCKETRIDE_*}` refs only.
-- Fan/creator UGC only (rights). Treat clips as transient demo footage.
+- Bring your own media: clips are dropped in locally. There is no URL or YouTube ingest node.
+- Never hardcode keys in a `.pipe`; use `${ROCKETRIDE_*}` references only. `.env` is gitignored.
+- `archive/` holds the original launch-night demo (the per-language pipes and booth scripts) for reference.
