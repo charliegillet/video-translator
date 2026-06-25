@@ -57,8 +57,7 @@
           "min_seconds": 240,
           "model": "base",
           "silence_threshold": 0.25,
-          "vad_level": 1,
-          "language": "en"
+          "vad_level": 1
         },
         "parameters": {}
       },
@@ -112,7 +111,7 @@
       "provider": "prompt",
       "config": {
         "instructions": [
-          "You are given the raw transcript of a short World Cup fan clip in its original language. ALWAYS write your entire response in English, no matter what language the transcript is in. Respond with exactly three numbered lines and nothing else: 1) Source language: name the language in English. 2) English translation: translate the transcript into natural English. 3) Moment: the single most exciting or funniest moment in one short English line. If the audio is too unclear to be sure of the language, set the language to 'unclear' and leave the moment empty. Do not invent anything not in the transcript."
+          "You are given the raw transcript of a short video or audio clip in its original language. ALWAYS write your entire response in English, no matter what language the transcript is in. Respond with exactly three numbered lines and nothing else: 1) Source language: name the language in English. 2) English translation: translate the transcript into natural English. 3) Key moment: the single most notable moment in one short English line. If the audio is too unclear to be sure of the language, set the language to 'unclear' and leave the key moment empty. Do not invent anything not in the transcript."
         ],
         "parameters": {}
       },
@@ -190,8 +189,8 @@
       }
     }
   ],
-  "name": "Polyglot Cup",
-  "description": "dropper -> parse -> audio_transcribe -> question -> prompt -> llm_anthropic -> response_answers. Parallel-transcribe many short World Cup fan clips in their native language, then translate + tag the moment to English.",
+  "name": "Video Translator",
+  "description": "dropper -> parse -> audio_transcribe -> question -> prompt -> llm_anthropic -> response_answers. Detects the language of any short video or audio clip, transcribes it (Whisper auto-detects the language, no per-language configuration), then uses an LLM to translate it to English and tag the key moment.",
   "source": "dropper_1",
   "project_id": "eb388d21-744a-4652-99e6-0380d5ee9198",
   "viewport": {
