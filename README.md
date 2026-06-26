@@ -4,9 +4,17 @@ A RocketRide pipeline that takes a short video or audio clip in any language, tr
 
 ## Pipeline
 
+```mermaid
+flowchart LR
+    dropper["dropper<br/>drop a video or audio file"] -->|tags| parse["parse<br/>split the file into media lanes"]
+    parse -->|video| transcribe["audio_transcribe<br/>Whisper: transcribe, auto-detect language"]
+    transcribe -->|text| question["question<br/>wrap the transcript as a question"]
+    question -->|questions| prompt["prompt<br/>inject the translate + tag instruction"]
+    prompt -->|questions| llm["llm_openai<br/>GPT: translate to English, tag the key moment"]
+    llm -->|answers| response["response_answers<br/>return the result"]
 ```
-dropper -> parse -> audio_transcribe -> question -> prompt -> llm_openai -> response_answers
-```
+
+Each arrow is a typed data lane: the dropper emits `tags`, `parse` passes the `video` lane to Whisper, transcription emits `text`, the `question` and `prompt` nodes carry `questions`, and the LLM returns `answers`.
 
 - `pipelines/video-translator.pipe` is the single pipeline.
 - `audio_transcribe` (Whisper) auto-detects the spoken language: the `language` field is left unset.
@@ -28,6 +36,12 @@ Three lines per clip:
 1. Source language (named in English)
 2. English translation of the transcript
 3. Key moment (one short line)
+
+```mermaid
+flowchart LR
+    clip["Video or audio clip<br/>any language"] --> transcript["Transcript<br/>original language"]
+    transcript --> result["English result<br/>1. Source language<br/>2. English translation<br/>3. Key moment"]
+```
 
 ## Roadmap
 
